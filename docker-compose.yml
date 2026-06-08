@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Aplikasi Laravel
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: aimeos-laravel-app:latest
+    container_name: aimeos_app
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./.env:/var/www/html/.env
+    depends_on:
+      - db
+
+  # Database MySQL
+  db:
+    image: mysql:8.0
+    container_name: aimeos_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-aimeos}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_USER: ${DB_USERNAME:-aimeos_user}
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:
