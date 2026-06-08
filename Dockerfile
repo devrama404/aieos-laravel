@@ -1,8 +1,9 @@
 # Stage 1: Build dependency menggunakan Composer
-FROM composer:2.7 as build
+FROM composer:2.7 AS build
 WORKDIR /app
 COPY . /app
-RUN composer install --no-dev --prefer-dist --no-scripts --no-progress --optimize-autoloader
+# Menambahkan --ignore-platform-reqs agar composer tidak komplain tentang ekstensi PHP saat build stage
+RUN composer install --no-dev --prefer-dist --no-scripts --no-progress --optimize-autoloader --ignore-platform-reqs
 
 # Stage 2: Application Runtime
 FROM php:8.2-fpm-alpine
@@ -20,7 +21,7 @@ RUN apk add --no-cache \
     icu-dev \
     oniguruma-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl microchip \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl \
     && docker-php-ext-enable opcache
 
 # Setup working directory
